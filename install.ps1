@@ -62,7 +62,10 @@ function Install-Winget {
 function Install-WithWinget([string] $id, [string] $name) {
     if (-not (Test-Command winget)) { Install-Winget }
     Write-Host "Installing $name..."
-    winget install --id $id --exact --silent --accept-package-agreements --accept-source-agreements
+    # Pinned to the community source: without it winget also asks msstore, which has no account in a
+    # Windows Sandbox, and then refuses to choose even when only one source answered.
+    winget install --id $id --exact --source winget --silent --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE) { throw "winget could not install $name (exit code $LASTEXITCODE)." }
     Refresh-Path
 }
 
