@@ -2,7 +2,7 @@
   Frontster toolkit bootstrap.
 
   What it does, in order:
-    1. Installs the .NET SDK and the GitHub CLI with winget if they are missing
+    1. Installs the .NET 10 SDK and the GitHub CLI with winget if they are missing
        (and winget itself first, on a machine without it, such as a Windows Sandbox).
     2. Signs in to GitHub with a device code (approve it on your phone or in a browser).
     3. Installs the `kit` launcher from the private package feed, using the token gh just made.
@@ -69,7 +69,13 @@ function Install-WithWinget([string] $id, [string] $name) {
     Refresh-Path
 }
 
-if (-not (Test-Command dotnet)) { Install-WithWinget 'Microsoft.DotNet.SDK.9' '.NET SDK 9' }
+# kit and its tools target .NET 10. A dotnet on PATH with only a runtime or an older SDK is not enough.
+function Test-DotNetSdk([int] $major) {
+    if (-not (Test-Command dotnet)) { return $false }
+    [bool] ((Get-NativeOutput dotnet @('--list-sdks')) -split "`n" | Where-Object { $_ -match "^$major\." })
+}
+
+if (-not (Test-DotNetSdk 10)) { Install-WithWinget 'Microsoft.DotNet.SDK.10' '.NET SDK 10' }
 if (-not (Test-Command gh))     { Install-WithWinget 'GitHub.cli' 'GitHub CLI' }
 
 $status = Get-NativeOutput gh @('auth', 'status', '-h', 'github.com')

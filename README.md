@@ -7,7 +7,7 @@ machine; the launcher does everything else.
 irm https://raw.githubusercontent.com/Frontster/kit/main/install.ps1 | iex
 ```
 
-The script installs the .NET SDK and the GitHub CLI if they are missing, signs you in to GitHub
+The script installs the .NET 10 SDK and the GitHub CLI if they are missing, signs you in to GitHub
 with a device code, installs `kit` from a private package feed, and hands over to `kit hello`.
 
 It contains no secrets and needs none to start. Read it before running it; it is short. For a
